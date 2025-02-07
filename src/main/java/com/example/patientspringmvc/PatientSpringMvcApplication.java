@@ -6,6 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 import java.util.Date;
 import java.util.List;
@@ -35,6 +37,7 @@ public class PatientSpringMvcApplication {
            //Builder
               Patient p3=Patient.builder()
                       .nom("Kamal")
+                      .prenom("Kamal")
                       .malade(true)
                       .dateNaissance(new Date())
                       .build();
@@ -47,6 +50,21 @@ public class PatientSpringMvcApplication {
             patients.forEach(p->{
                 System.out.println(p.toString());
             });*/
+        };
+    }
+
+    //@Bean
+    CommandLineRunner commandLineRunner(JdbcUserDetailsManager jdbcUserDetailsManager){
+        return args -> {
+            if(!jdbcUserDetailsManager.userExists("admin11")){
+                jdbcUserDetailsManager.createUser(User.withUsername("admin11").password("{noop}1234").roles("ADMIN","USER").build());
+            }
+            if(!jdbcUserDetailsManager.userExists("user11")){
+                jdbcUserDetailsManager.createUser(User.withUsername("user11").password("{noop}1234").roles("USER").build());
+            }
+            if(!jdbcUserDetailsManager.userExists("user22")){
+                jdbcUserDetailsManager.createUser(User.withUsername("user22").password("{noop}1234").roles("USER").build());
+            }
         };
     }
 

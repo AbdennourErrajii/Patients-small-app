@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template}"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>403 - Accès refusé</title>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .error-container {
+            margin-top: 100px;
+            text-align: center;
+        }
+        .error-code {
+            font-size: 120px;
+            font-weight: bold;
+            color: #dc3545; /* Rouge Bootstrap */
+        }
+        .error-message {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #6c757d; /* Gris Bootstrap */
+        }
+        .btn-home {
+            margin-top: 30px;
+            padding: 10px 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 error-container">
+                <div class="error-code">403</div>
+                <div class="error-message">
+                    Oups ! Vous n'avez pas la permission d'accéder à cette page.
+                </div>
+                <a th:href="@{/}" class="btn btn-primary btn-home">Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -6,12 +6,16 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 
 @Controller
@@ -20,7 +24,7 @@ public class PatientController {
     @Autowired
     private PatientRepo patientRepo;
 
-    @GetMapping("/index")
+    @GetMapping("/user/index")
     public String index(Model model,
                         @RequestParam(name = "page",defaultValue = "0") int page,
                        @RequestParam(name = "size", defaultValue = "5") int size,
@@ -32,28 +36,47 @@ public class PatientController {
         model.addAttribute("keyword",keyword);
         return "patients";
     }
-
-    @GetMapping("/deletePatient")
-    public String delete(@RequestParam(name="id") Long idPatient, String keyword, int page){
-        patientRepo.deleteById(idPatient);
-        return "redirect:/index?page="+page+"&keyword="+keyword;
+    @GetMapping("/patients")
+    @ResponseBody
+    public List<Patient> listPatients(){
+        return patientRepo.findAll();
     }
 
-    @GetMapping("/formPatient")
+    @GetMapping("/admin/deletePatient")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String delete(@RequestParam(name="id") Long idPatient, String keyword, int page){
+        patientRepo.deleteById(idPatient);
+        return "redirect:/user/index?page="+page+"&keyword="+keyword;
+    }
+
+    @GetMapping("/admin/formPatient")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String formPatient(Model model ){
         model.addAttribute("patient",new Patient());
         return "formPatient";
     }
-    @PostMapping("/savePatient")
-    public String savePatient(@Valid Patient patient, BindingResult bindingResult){
+    @PostMapping("/admin/savePatient")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String savePatient(@Valid Patient patient, BindingResult bindingResult,
+                          @RequestParam(defaultValue = "")    String keyword,
+                              @RequestParam(defaultValue = "0") int page){
         if (bindingResult.hasErrors()) return "formPatient";
         patientRepo.save(patient);
-        return "redirect:/index";
+        return "redirect:/user/index?page="+page+"&keyword="+keyword;
     }
-    @GetMapping("/editPatient")
-    public String editPatient(@RequestParam(name = "id") Long id, Model model){
-        Patient patient=patientRepo.findById(id).get();
+    @GetMapping("/admin/editPatient")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String editPatient(@RequestParam(name = "id") Long id, Model model, String keyword, int page){
+        Patient patient=patientRepo.findById(id).orElse(null);
+        if(patient==null) throw new RuntimeException("Patient not found");
         model.addAttribute("patient",patient);
+        model.addAttribute("keyword",keyword);
+        model.addAttribute("page",page);
         return "editPatient";
+    }
+
+    @GetMapping("/")
+    public String main(){
+        return "home";
     }
 }
