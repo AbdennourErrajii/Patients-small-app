@@ -1,3 +1,17 @@
-create table if not exists users(username varchar(50) not null primary key,password varchar(500) not null,enabled boolean not null);
-create table if not exists authorities (username varchar(50) not null,authority varchar(50) not null,constraint fk_authorities_users foreign key(username) references users(username));
-create unique index if not exists ix_auth_username on authorities (username,authority);
+CREATE TABLE IF NOT EXISTS users (
+    username VARCHAR(50) NOT NULL PRIMARY KEY,
+    password VARCHAR(500) NOT NULL,
+    enabled BOOLEAN NOT NULL
+    );
+
+CREATE TABLE IF NOT EXISTS authorities (
+    username VARCHAR(50) NOT NULL,
+    authority VARCHAR(50) NOT NULL,
+    CONSTRAINT fk_authorities_users FOREIGN KEY(username) REFERENCES users(username)
+    );
+
+-- Supprimer l'index s'il existe
+DROP INDEX ix_auth_username ON authorities;
+
+-- Créer l'index unique
+CREATE UNIQUE INDEX ix_auth_username ON authorities (username, authority);
