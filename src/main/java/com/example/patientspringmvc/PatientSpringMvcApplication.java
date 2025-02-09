@@ -50,7 +50,14 @@ public class PatientSpringMvcApplication {
                       .dateNaissance(new Date())
                       .build();
 
+            /*patientRepo.save(p1);
+            patientRepo.save(p2);
+            patientRepo.save(p3);*/
 
+            /*List<Patient> patients=patientRepo.findAll();
+            patients.forEach(p->{
+                System.out.println(p.toString());
+            });*/
         };
     }
 
